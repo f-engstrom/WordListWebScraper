@@ -11,23 +11,44 @@ namespace WordListWebScraper
     class WordProsessing
     {
         public static Dictionary<string, int> SortedWords { get; set; } = new Dictionary<string, int>();
+        public static List<string> Links { get; set; } = new List<string>();
 
-
-        public static void ProcessWordsFromScrapedString(string scrapedWords)
+        public static void ProcessWordsFromScrapedString(string scrapedString)
         {
 
 
-            Dictionary<string, int> sortedCountedWords = WordCountSorter(WordScraper(scrapedWords));
+            Dictionary<string, int> sortedCountedWords = WordCountSorter(WordScraper(scrapedString));
 
             SortedWords = DeleteIgnoredWords(TextFileProsessing.WordsToIgnore(Program.ignorelistLocation), sortedCountedWords);
 
 
         }
 
+        public static void GetLinksFromWebPage(string scrapedString)
+        {
+
+          Links =  ParseLinks(scrapedString);
+
+        }
+
+        private static List<string> ParseLinks(string scrapedString)
+        {
+
+            char[] split = new[] {'<', '>'};
+
+
+            List<string> splitList = scrapedString.Split(split, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            List<string> links = splitList.Where(x => x.Contains("href=")).ToList();
+
+            return links;
+
+        }
+
+
         public static void DeleteNewIgnoredWords()
         {
             SortedWords = DeleteIgnoredWords(TextFileProsessing.WordsToIgnore(Program.ignorelistLocation), SortedWords);
-
 
         }
 
@@ -64,7 +85,7 @@ namespace WordListWebScraper
             {
                 if (!(sortedWords.Keys.Contains(word.key)))
                 {
-                    sortedWords.Add(word.key, word.count);
+                    sortedWords.Add(word.key.Trim(), word.count);
 
                 }
 

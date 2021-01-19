@@ -38,10 +38,12 @@ namespace WordListWebScraper
 
                 Clear();
 
-                WriteLine("1. Read Web source");
-                WriteLine("2. Read text source");
-                WriteLine("3. List words");
-                WriteLine("4. Exit");
+                WriteLine("1. Get words from Web source");
+                WriteLine("2. Get links from Web source");
+                WriteLine("3. Read text source");
+                WriteLine("4. List words");
+                WriteLine("5. List Links");
+                WriteLine("6. Exit");
 
                 ConsoleKeyInfo keyPressed = ReadKey(true);
 
@@ -60,7 +62,7 @@ namespace WordListWebScraper
 
                             string scrapedWebdWords = await client.GetStringAsync(source);
 
-                             WordProsessing.ProcessWordsFromScrapedString(scrapedWebdWords);
+                            WordProsessing.ProcessWordsFromScrapedString(scrapedWebdWords);
 
                             TextFileProsessing.WriteToGatherdWOrdsAndCOuntxt();
                         }
@@ -73,7 +75,34 @@ namespace WordListWebScraper
 
                         break;
 
+
                     case ConsoleKey.D2:
+
+                        try
+                        {
+                            Clear();
+
+                            Write("Enter websource uri: ");
+                            source = ReadLine();
+
+                            string scrapedWebdString = await client.GetStringAsync(source);
+
+                            WordProsessing.GetLinksFromWebPage(scrapedWebdString);
+
+                            TextFileProsessing.WriteToGatherdWOrdsAndCOuntxt();
+                        }
+                        catch (Exception e)
+                        {
+                            WriteLine(e);
+                            ReadKey();
+                        }
+
+
+                        break;
+
+
+
+                    case ConsoleKey.D3:
 
                         try
                         {
@@ -98,7 +127,7 @@ namespace WordListWebScraper
 
                         break;
 
-                    case ConsoleKey.D3:
+                    case ConsoleKey.D4:
 
                         Clear();
 
@@ -106,7 +135,23 @@ namespace WordListWebScraper
 
                         break;
 
-                    case ConsoleKey.D4:
+                    case ConsoleKey.D5:
+
+                        Clear();
+
+                        foreach (var link in WordProsessing.Links)
+                        {
+
+                            WriteLine(link);
+                            
+                        }
+
+                        ReadKey(true);
+
+                        break;
+
+
+                    case ConsoleKey.D6:
 
                         shouldNotExit = false;
 
@@ -115,8 +160,8 @@ namespace WordListWebScraper
 
                 }
 
-                    WordProsessing.DeleteNewIgnoredWords();
-
+                WordProsessing.DeleteNewIgnoredWords();
+               WordProsessing.SortedWords = WordProsessing.SortedWords.OrderByDescending(x => x.Value);
 
             }
 
